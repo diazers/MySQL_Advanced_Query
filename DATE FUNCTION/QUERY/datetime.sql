@@ -75,13 +75,13 @@ SELECT permalink,
   SELECT CURDATE();
   
  -- menentukan berapa lama perusahaan itu berdiri dan menghilangkan NULL Values juga bisa menggunakan bantuan sub-query
-  SELECT	*
+  SELECT *
   FROM 		 (
-			  SELECT permalink,
-					 date_format(str_to_date(founded_at,'%m/%d/%Y' ), '%Y/%m/%d' ) AS cleaned_founded_at,
-					 DATEDIFF(CURDATE(),date_format(str_to_date(founded_at,'%m/%d/%Y' ), '%Y/%m/%d' )) AS founded_time_ago
-			  FROM crunchbase.companies
-			  ) AS sub_query
+			SELECT permalink,
+			date_format(str_to_date(founded_at,'%m/%d/%Y' ), '%Y/%m/%d' ) AS cleaned_founded_at,
+			DATEDIFF(CURDATE(),date_format(str_to_date(founded_at,'%m/%d/%Y' ), '%Y/%m/%d' )) AS founded_time_ago
+			FROM crunchbase.companies
+		  ) AS sub_query
    WHERE sub_query.founded_time_ago IS NOT NULL
 
 -- kita bisa menggunakan fungsi extract untuk mengekstrak sebagian atau nagian dari suatu tanggal
