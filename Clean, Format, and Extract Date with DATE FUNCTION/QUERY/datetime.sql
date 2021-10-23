@@ -104,6 +104,37 @@ SELECT 	acquired_at_cleaned,
 		EXTRACT(QUARTER FROM acquired_at_cleaned) AS 'MONTH_OF_ACQUIRED'
 FROM	acquisitions_clean_dates
 
+SELECT acquired_at_cleaned,
+       EXTRACT(year   FROM acquired_at_cleaned) AS year,
+       EXTRACT(month  FROM acquired_at_cleaned) AS month,
+       EXTRACT(day   FROM acquired_at_cleaned) AS day,
+       EXTRACT(hour   FROM acquired_at_cleaned) AS hour,
+       EXTRACT(minute FROM acquired_at_cleaned) AS minute,
+       EXTRACT(second FROM acquired_at_cleaned) AS second
+  FROM acquisitions_clean_dates
+
+-- kita bisa juga jadikan tanggal didalam control flow CASE WHEN sebagai syarat agregasi
+-- misal kueri yang menghitung jumlah perusahaan yang diakuisisi dalam 3 tahun, 5 tahun, dan 10 tahun didirikan (dalam 3 kolom terpisah). 
+-- Sertakan juga kolom untuk total perusahaan yang diakuisisi. Kelompokkan berdasarkan kategori dan batasi hanya baris yang meiliki tanggal berdirinya perusahaan.
+SELECT companies.category_code,
+       COUNT(CASE WHEN DATE_FORMAT(acquired_at_cleaned, '%Y-%m-%d') <= companies.founded_at_clean + INTERVAL 3 YEAR THEN 1 ELSE NULL END) AS acquired_3_yrs,
+       COUNT(CASE WHEN DATE_FORMAT(acquired_at_cleaned, '%Y-%m-%d') <= companies.founded_at_clean + INTERVAL 5 YEAR THEN 1 ELSE NULL END) AS acquired_5_yrs,
+       COUNT(CASE WHEN DATE_FORMAT(acquired_at_cleaned, '%Y-%m-%d') <= companies.founded_at_clean + INTERVAL 10 YEAR THEN 1 ELSE NULL END) AS acquired_10_yrs,
+       COUNT(1) AS total
+  FROM crunchbase.companies_clean_dates companies
+  JOIN crunchbase.acquisitions_clean_dates acquisitions
+    ON acquisitions.company_permalink = companies.permalink
+ WHERE founded_at_clean IS NOT NULL
+ GROUP BY 1
+ ORDER BY 5 DESC
+
+SELECT CURRENT_DATE AS date,
+       CURRENT_TIME AS time,
+       CURRENT_TIMESTAMP AS timestamp,
+       LOCALTIME,
+       LOCALTIMESTAMP,
+       NOW() AS now
+
 -- kita bisa juga jadikan tanggal didalam control flow CASE WHEN sebagai syarat agregasi
 -- misal kueri yang menghitung jumlah perusahaan yang diakuisisi dalam 3 tahun, 5 tahun, dan 10 tahun didirikan (dalam 3 kolom terpisah). 
 -- Sertakan juga kolom untuk total perusahaan yang diakuisisi. Kelompokkan berdasarkan kategori dan batasi hanya baris yang meiliki tanggal berdirinya perusahaan.
